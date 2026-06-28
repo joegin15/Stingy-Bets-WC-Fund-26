@@ -213,7 +213,7 @@ body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color
 /* ===================== CONFIG ===================== */
 const WALLET = (new URLSearchParams(location.search).get('wallet')
   || '0xdDB394e13Da5c9Cf30416447E2DcE055329B5fE5').toLowerCase();
-const STARTING_BALANCE = 400;                       // assumed pooled balance on the start date
+const STARTING_BALANCE = 500;                       // assumed pooled balance on the start date
 const HISTORY_FROM = Date.UTC(2026, 5, 26) / 1000;  // 26 Jun 2026 — nothing before this counts
 
 // EDIT: who's in the fund and what each person put in.
@@ -224,6 +224,7 @@ const MEMBERS = [
   { name: 'Brett', deposit: 100 },
   { name: 'Derek', deposit: 100 },
   { name: 'Tom',   deposit: 100 },
+  { name: 'Ryan',  deposit: 100 },
 ];
 
 const DATA_API = 'https://data-api.polymarket.com';
@@ -357,18 +358,17 @@ function renderMembers(balance){
 }
 
 /* ---------- HISTORY ---------- */
-function renderHistory(closed){
+function renderHistory(settled){
   const list=$('historyList');
-  const items=closed.filter(sinceStart).sort((a,b)=>closedTime(b)-closedTime(a));
-  if(!items.length){ list.innerHTML='<div class="state">No settled bets yet. They\u2019ll appear here once a position resolves.</div>'; return; }
-  list.innerHTML=items.map(c=>{
-    const pnl=c.realizedPnl||0, up=pnl>=0;
+  if(!settled.length){ list.innerHTML='<div class="state">No settled bets yet. They\u2019ll appear here once a position resolves.</div>'; return; }
+  list.innerHTML=settled.map(c=>{
+    const up=c.net>=0;
     return `<div class="h-row ${up?'won':'lost'}">
       <div class="h-left">
         <div class="h-title">${esc(c.title||'Market')}</div>
         <div class="h-sub">${c.outcome?`<span class="tag ${outClass(c.outcome)}">${esc(c.outcome)}</span>`:''}</div>
       </div>
-      <div class="h-right"><div class="h-amt ${up?'up':'down'}">${signed(pnl)}</div></div>
+      <div class="h-right"><div class="h-amt ${up?'up':'down'}">${signed(c.net)}</div></div>
     </div>`;
   }).join('');
 }
@@ -379,38 +379,66 @@ async function loadAll(){
   if(loading) return; loading=true;
   $('refreshBtn').textContent='…'; setLive('stale','Updating…');
   try{
-    const [open, closed] = await Promise.all([
+    const [open, activity] = await Promise.all([
       fetchJSON(`${DATA_API}/positions?user=${WALLET}&limit=500`).catch(()=>[]),
-      fetchJSON(`${DATA_API}/closed-positions?user=${WALLET}&limit=500&sortBy=TIMESTAMP&sortDirection=DESC`).catch(()=>[])
+      fetchJSON(`${DATA_API}/activity?user=${WALLET}&limit=500`).catch(()=>[])
     ]);
 
-    const closedQual = closed.filter(sinceStart);
-    const realized   = closedQual.reduce((s,c)=>s+(c.realizedPnl||0),0);
-    const unrealized = open.reduce((s,p)=>s+(p.cashPnl||0),0);
-    const delta   = realized + unrealized;
-    const balance = STARTING_BALANCE + delta;
+    const openTitles = new Set(open.map(p=>p.title));
+    const openValue  = open.reduce((s,p)=>s+(p.currentValue||0),0);
+
+    // Reconstruct every market from the activity ledger (the complete record).
+    // Each cash movement since the start date: BUY = cash out, SELL/REDEEM = cash in.
+    let buys=0, cashIn=0;
+    const mkt = {}; // title -> { net, lastTs, outcome }
+    for(const a of activity){
+      const ts=a.timestamp||0;
+      if(ts < HISTORY_FROM) continue;
+      const usdc=a.usdcSize||0, title=a.title||'Market';
+      let flow=0;
+      if(a.type==='TRADE' && a.side==='BUY'){ flow=-usdc; buys+=usdc; }
+      else if(a.type==='TRADE' && a.side==='SELL'){ flow=usdc; cashIn+=usdc; }
+      else if(a.type==='REDEEM'){ flow=usdc; cashIn+=usdc; }
+      else continue; // ignore rebates etc.
+      const m = mkt[title] || (mkt[title]={ net:0, lastTs:0, outcome:'' });
+      m.net += flow;
+      if(ts>m.lastTs) m.lastTs=ts;
+      if(a.outcome) m.outcome=a.outcome;
+    }
+
+    // Settled = markets with no remaining open position. Open ones live in Positions.
+    const settled = Object.entries(mkt)
+      .filter(([title])=>!openTitles.has(title))
+      .map(([title,m])=>({ title, net:m.net, t:m.lastTs, outcome:m.outcome }))
+      .sort((a,b)=>b.t-a.t);
+
+    const balance = STARTING_BALANCE + (cashIn - buys) + openValue;
+    const delta   = balance - STARTING_BALANCE;
     const pct     = STARTING_BALANCE ? (delta/STARTING_BALANCE)*100 : 0;
     const up      = delta>=0;
+    const wins    = settled.filter(s=>s.net>=0).length;
+    const losses  = settled.filter(s=>s.net<0).length;
 
     $('balValue').textContent = usd(balance);
     $('balDelta').className = 'head-delta ' + (delta===0?'':(up?'up':'down'));
     $('balDelta').innerHTML = `${delta===0?'':(up?'▲ ':'▼ ')}${signed(delta)} (${(up?'+':'')+pct.toFixed(2)}%)`;
 
-    // build equity curve from real settlement timestamps
-    const settledAsc = closedQual.slice().sort((a,b)=>closedTime(a)-closedTime(b));
+    // Equity curve: step the running total at each settlement, end at the live balance.
+    const settledAsc = settled.slice().sort((a,b)=>a.t-b.t);
     let run=STARTING_BALANCE;
     const series=[{ t:HISTORY_FROM*1000, bal:STARTING_BALANCE }];
-    for(const c of settledAsc){ run+=(c.realizedPnl||0); series.push({ t:closedTime(c)*1000, bal:run }); }
-    series.push({ t:Date.now(), bal:run+unrealized });
+    for(const s of settledAsc){ run+=s.net; series.push({ t:s.t*1000, bal:run }); }
+    series.push({ t:Date.now(), bal:balance });
     renderChart(series);
 
     $('cntPositions').textContent = open.length;
-    $('cntHistory').textContent   = closedQual.length;
+    $('cntHistory').textContent   = settled.length;
     renderPositions(open);
     renderMembers(balance);
-    renderHistory(closed);
+    renderHistory(settled);
     const startLabel = new Date(HISTORY_FROM*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-    $('addrLine').innerHTML = `Started at ${usd(STARTING_BALANCE)} on ${startLabel} · <span class="wallet-link" onclick="openWallet()">wallet ${WALLET.slice(0,6)}…${WALLET.slice(-4)}</span>`;
+    const rec = (wins||losses) ? ` · ${wins}W–${losses}L` : '';
+    $('addrLine').innerHTML = `Started at ${usd(STARTING_BALANCE)} on ${startLabel}${rec} · <span class="wallet-link" onclick="openWallet()">wallet ${WALLET.slice(0,6)}…${WALLET.slice(-4)}</span>`;
     setLive('ok','Live · '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
   }catch(e){
     setLive('error','Connection error');
