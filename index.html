@@ -6,7 +6,7 @@
 <title>Stingy Bets — World Cup Fund '26</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 :root {
   --bg:#111318; --surface:#1a1d23; --surf2:#22252d;
   --border:rgba(255,255,255,0.08); --bord2:rgba(255,255,255,0.14);
@@ -15,18 +15,10 @@
   --red:#f45531; --red2:rgba(244,85,49,0.12);
   --gold:#c9a830; --gold2:rgba(201,168,48,0.14);
 }
-html { -webkit-text-size-adjust: 100%; }
-body {
-  font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--text);
-  min-height:100vh; -webkit-font-smoothing:antialiased;
-}
+html { -webkit-text-size-adjust:100%; }
+body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; -webkit-font-smoothing:antialiased; }
 
-/* NAV */
-.nav {
-  display:flex; align-items:center; justify-content:space-between; gap:12px;
-  padding:0 20px; min-height:52px;
-  border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg); z-index:100;
-}
+.nav { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 20px; min-height:52px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg); z-index:100; }
 .brand { font-size:12px; font-weight:600; letter-spacing:0.06em; color:var(--text2); text-transform:uppercase; }
 .brand em { color:var(--green); font-style:normal; }
 .nav-right { display:flex; align-items:center; gap:12px; flex-shrink:0; }
@@ -35,39 +27,35 @@ body {
 .live-dot.stale { background:var(--text3); animation:none; }
 .live-dot.error { background:var(--red); animation:none; }
 @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.25;} }
-.refresh-btn {
-  background:var(--surf2); border:1px solid var(--border); color:var(--text2);
-  font-size:11px; font-family:inherit; padding:6px 12px; border-radius:6px; cursor:pointer;
-}
+.refresh-btn { background:var(--surf2); border:1px solid var(--border); color:var(--text2); font-size:11px; font-family:inherit; padding:6px 12px; border-radius:6px; cursor:pointer; }
 .refresh-btn:hover { color:var(--text); border-color:var(--bord2); }
 .refresh-btn:active { transform:scale(.97); }
 
 .container { max-width:680px; margin:0 auto; padding:0 20px 64px; }
 
-/* HEADLINE: OPEN POSITIONS */
-.head { padding:32px 0 26px; border-bottom:1px solid var(--border); margin-bottom:26px; }
+/* HEADLINE */
+.head { padding:30px 0 4px; }
 .head-label { font-size:13px; color:var(--text2); margin-bottom:8px; }
 .head-value { font-size:40px; font-weight:700; letter-spacing:-0.03em; line-height:1; }
-.head-delta { font-size:14px; font-weight:500; margin-top:10px; }
+.head-delta { font-size:14px; font-weight:500; margin-top:10px; min-height:18px; }
 .head-delta.up { color:var(--green); }
 .head-delta.down { color:var(--red); }
-.head-delta .muted { color:var(--text3); font-weight:400; margin-left:6px; }
 
-/* SECTION TITLES */
-.sec-title {
-  font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
-  color:var(--text2); margin:0 0 14px; display:flex; align-items:center; gap:8px;
-}
+/* CHART */
+.chart-wrap { position:relative; margin:16px 0 30px; padding-bottom:24px; border-bottom:1px solid var(--border); }
+.chart-wrap svg { display:block; width:100%; height:auto; touch-action:none; cursor:crosshair; }
+.chart-cap { display:flex; justify-content:space-between; font-size:11px; color:var(--text3); margin-top:8px; }
+.chart-tip { position:absolute; top:4px; background:var(--surf2); border:1px solid var(--bord2); border-radius:8px; padding:6px 10px; pointer-events:none; opacity:0; transition:opacity .1s; white-space:nowrap; z-index:5; display:flex; flex-direction:column; gap:1px; }
+.chart-tip .tip-bal { font-weight:700; font-size:13px; }
+.chart-tip .tip-date { color:var(--text3); font-size:10px; }
+
+.sec-title { font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text2); margin:0 0 14px; display:flex; align-items:center; gap:8px; }
 .sec-count { font-size:11px; color:var(--text3); background:var(--surf2); border-radius:20px; padding:1px 9px; }
-.section { margin-bottom:36px; }
+.section { margin-bottom:34px; }
 
 /* POSITION ROWS */
 .rows { display:flex; flex-direction:column; gap:8px; }
-.row {
-  background:var(--surface); border:1px solid var(--border); border-radius:12px;
-  padding:14px 16px; display:flex; align-items:center; gap:12px;
-  text-decoration:none; color:inherit; transition:border-color .15s;
-}
+.row { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; transition:border-color .15s; }
 .row:hover { border-color:var(--bord2); }
 .row.won { border-left:3px solid var(--green); }
 .row.lost { border-left:3px solid var(--red); }
@@ -80,52 +68,67 @@ body {
 .row-pnl { font-size:12px; font-weight:500; margin-top:3px; }
 .row-pnl.up { color:var(--green); }
 .row-pnl.down { color:var(--red); }
-.row-detail { font-size:11px; color:var(--text3); margin-top:3px; }
 .tag { font-size:11px; color:var(--text2); background:var(--surf2); border-radius:4px; padding:2px 7px; white-space:nowrap; }
-.tag.yes { color:var(--green); background:var(--green2); }
-.tag.no { color:var(--red); background:var(--red2); }
+.tag.yes,.tag.over { color:var(--green); background:var(--green2); }
+.tag.no,.tag.under { color:var(--red); background:var(--red2); }
 .row-sub { font-size:11px; color:var(--text3); }
 
-/* HISTORY ROWS */
-.h-row {
-  background:var(--surface); border:1px solid var(--border); border-radius:12px;
-  padding:13px 16px; display:flex; align-items:center; gap:12px; justify-content:space-between;
-}
+/* MEMBERS */
+.mem-row { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:13px 16px; display:flex; align-items:center; gap:14px; }
+.mem-rank { font-size:12px; font-weight:700; color:var(--text3); width:16px; text-align:center; flex-shrink:0; }
+.mem-main { flex:1; min-width:0; }
+.mem-name { font-size:14px; font-weight:600; }
+.mem-sub { font-size:11px; color:var(--text3); margin-top:3px; }
+.mem-bar { height:3px; background:var(--surf2); border-radius:2px; margin-top:7px; overflow:hidden; }
+.mem-bar > i { display:block; height:100%; background:var(--text2); border-radius:2px; }
+.mem-right { text-align:right; flex-shrink:0; }
+.mem-cur { font-size:15px; font-weight:700; letter-spacing:-0.01em; }
+.mem-pnl { font-size:12px; font-weight:500; margin-top:3px; }
+.mem-pnl.up { color:var(--green); }
+.mem-pnl.down { color:var(--red); }
+
+/* HISTORY */
+.hist-toggle { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-family:inherit; color:var(--text); }
+.hist-toggle:hover { border-color:var(--bord2); }
+.hist-toggle-left { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text2); }
+.chev { width:16px; height:16px; transition:transform .2s; color:var(--text3); }
+.hist-toggle.open .chev { transform:rotate(90deg); }
+.hist-body { display:none; flex-direction:column; gap:8px; margin-top:8px; }
+.hist-body.open { display:flex; }
+.h-row { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:13px 16px; display:flex; align-items:center; gap:12px; justify-content:space-between; }
+.h-row.won { border-left:3px solid var(--green); }
+.h-row.lost { border-left:3px solid var(--red); }
 .h-left { min-width:0; }
 .h-title { font-size:13px; font-weight:500; line-height:1.35; }
-.h-side { font-size:10px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; border-radius:4px; padding:2px 7px; margin-right:8px; }
-.h-side.buy { background:var(--green2); color:var(--green); }
-.h-side.sell { background:var(--red2); color:var(--red); }
-.h-side.redeem { background:var(--gold2); color:var(--gold); }
-.h-sub { margin-top:6px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.h-sub { margin-top:6px; }
 .h-right { flex-shrink:0; text-align:right; }
-.h-amt { font-size:14px; font-weight:600; white-space:nowrap; }
+.h-amt { font-size:15px; font-weight:700; white-space:nowrap; letter-spacing:-0.01em; }
+.h-amt.up { color:var(--green); }
+.h-amt.down { color:var(--red); }
 
-/* STATES */
-.state { text-align:center; padding:40px 0; color:var(--text3); font-size:13px; }
+.state { text-align:center; padding:28px 0; color:var(--text3); font-size:13px; }
 .skeleton { background:var(--surface); border:1px solid var(--border); border-radius:12px; height:64px; margin-bottom:8px; position:relative; overflow:hidden; }
+.skeleton.tall { height:150px; }
 .skeleton::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent); animation:shimmer 1.4s infinite; }
 @keyframes shimmer { 100%{transform:translateX(100%);} }
 
-.addr { font-size:11px; color:var(--text3); margin-top:8px; }
+.addr { font-size:11px; color:var(--text3); margin-top:14px; }
 .addr a { color:var(--text2); text-decoration:none; }
 .addr a:hover { color:var(--green); }
 .footer { text-align:center; padding:24px 20px; font-size:11px; color:var(--text3); border-top:1px solid var(--border); }
 .footer a { color:var(--text2); text-decoration:none; }
 .footer a:hover { color:var(--text); }
 
-/* MOBILE */
 @media (max-width:560px) {
   .nav { padding:0 14px; }
   .brand { font-size:10px; letter-spacing:0.04em; }
   .live-pill span { display:none; }
   .container { padding:0 14px 56px; }
-  .head { padding:26px 0 22px; }
+  .head { padding:24px 0 4px; }
   .head-value { font-size:34px; }
   .row { padding:12px 14px; gap:10px; }
   .row-icon { width:32px; height:32px; }
   .row-title { font-size:13px; }
-  .row-val { font-size:14px; }
 }
 </style>
 </head>
@@ -143,8 +146,16 @@ body {
 
   <!-- HEADLINE -->
   <div class="head">
-    <div class="head-label">Open positions</div>
-    <div class="head-value" id="posValue">$—</div>
+    <div class="head-label">Portfolio balance</div>
+    <div class="head-value" id="balValue">$—</div>
+    <div class="head-delta" id="balDelta">&nbsp;</div>
+  </div>
+
+  <!-- EQUITY CURVE -->
+  <div class="chart-wrap" id="chartWrap">
+    <div class="chart-tip" id="chartTip"></div>
+    <div id="chartHost"><div class="skeleton tall"></div></div>
+    <div class="chart-cap"><span id="capStart">Jun 1, 2026</span><span>Live</span></div>
   </div>
 
   <!-- POSITIONS -->
@@ -155,8 +166,20 @@ body {
 
   <!-- HISTORY -->
   <div class="section">
-    <div class="sec-title">History <span class="sec-count" id="cntHistory">0</span></div>
-    <div class="rows" id="historyList"><div class="skeleton"></div><div class="skeleton"></div></div>
+    <button class="hist-toggle" id="histToggle" onclick="toggleHistory()">
+      <span class="hist-toggle-left">History <span class="sec-count" id="cntHistory">0</span></span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="hist-body" id="historyList"></div>
+  </div>
+
+  <!-- MEMBERS (dropdown, bottom) -->
+  <div class="section">
+    <button class="hist-toggle" id="memToggle" onclick="toggleMembers()">
+      <span class="hist-toggle-left">Members <span class="sec-count" id="cntMembers">0</span></span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="hist-body" id="membersList"></div>
     <div class="addr" id="addrLine"></div>
   </div>
 
@@ -168,23 +191,96 @@ body {
 </div>
 
 <script>
+/* ===================== CONFIG ===================== */
 const WALLET = (new URLSearchParams(location.search).get('wallet')
   || '0xdDB394e13Da5c9Cf30416447E2DcE055329B5fE5').toLowerCase();
+const STARTING_BALANCE = 400;                       // assumed pooled balance on the start date
+const HISTORY_FROM = Date.UTC(2026, 5, 26) / 1000;  // 26 Jun 2026 — nothing before this counts
+
+// EDIT: who's in the fund and what each person put in.
+// Shares are worked out from each deposit's proportion of the total, so it
+// stays correct even if these don't add up to exactly STARTING_BALANCE.
+const MEMBERS = [
+  { name: 'Joe',   deposit: 100 },
+  { name: 'Brett', deposit: 100 },
+  { name: 'Derek', deposit: 100 },
+  { name: 'Tom',   deposit: 100 },
+];
+
 const DATA_API = 'https://data-api.polymarket.com';
 const REFRESH_MS = 30000;
-const HISTORY_FROM = Date.UTC(2026, 5, 1) / 1000;          // hide anything before 1 Jun 2026
-const HIST_TYPES = ['TRADE', 'REDEEM', 'MERGE', 'SPLIT'];
-const inHistory = a => HIST_TYPES.includes(a.type) && (a.timestamp || 0) >= HISTORY_FROM;
+/* ================================================== */
 
 const $ = id => document.getElementById(id);
 const usd = n => '$' + (n < 0 ? '-' : '') + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const signed = n => (n >= 0 ? '+' : '-') + '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const cents = p => Math.round(p * 100) + '¢';
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-const outClass = o => { const x=(o||'').toLowerCase(); return x==='yes'?'yes':(x==='no'?'no':''); };
+const outClass = o => { const x=(o||'').toLowerCase(); return ['yes','no','over','under'].includes(x)?x:''; };
+const closedTime = c => c.timestamp ? c.timestamp : (c.endDate ? Date.parse(c.endDate)/1000 : 0);
+const sinceStart = c => closedTime(c) >= HISTORY_FROM;
 
 function setLive(state, text){ $('liveDot').className='live-dot'+(state==='ok'?'':' '+state); $('liveText').textContent=text; }
 async function fetchJSON(url){ const r=await fetch(url,{headers:{'Accept':'application/json'}}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+function toggleHistory(){ $('histToggle').classList.toggle('open'); $('historyList').classList.toggle('open'); }
+function toggleMembers(){ $('memToggle').classList.toggle('open'); $('membersList').classList.toggle('open'); }
 
+/* ---------- EQUITY CURVE ---------- */
+let chartGeo = null;
+function renderChart(series){
+  const W=720, H=150, padX=3, padT=16, padB=18;
+  const bals=series.map(p=>p.bal);
+  let minB=Math.min(...bals, STARTING_BALANCE), maxB=Math.max(...bals, STARTING_BALANCE);
+  if(minB===maxB){ minB-=10; maxB+=10; }
+  const rng=maxB-minB; minB-=rng*0.12; maxB+=rng*0.12;
+  const t0=series[0].t, t1=Math.max(series[series.length-1].t, t0+1);
+  const X=t=>padX+(t-t0)/(t1-t0)*(W-2*padX);
+  const Y=b=>padT+(1-(b-minB)/(maxB-minB))*(H-padT-padB);
+  const pts=series.map(p=>({px:X(p.t), py:Y(p.bal), t:p.t, bal:p.bal}));
+  const cur=series[series.length-1].bal, up=cur>=STARTING_BALANCE;
+  const color=up?'var(--green)':'var(--red)';
+  const fill=up?'rgba(0,200,5,0.20)':'rgba(244,85,49,0.20)';
+  const line=pts.map((p,i)=>(i?'L':'M')+p.px.toFixed(2)+' '+p.py.toFixed(2)).join(' ');
+  const area=line+` L ${pts[pts.length-1].px.toFixed(2)} ${H-padB} L ${pts[0].px.toFixed(2)} ${H-padB} Z`;
+  const baseY=Y(STARTING_BALANCE).toFixed(2), end=pts[pts.length-1];
+  $('chartHost').innerHTML=`
+    <svg id="equitySvg" viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="xMidYMid meet">
+      <defs><linearGradient id="eqg" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="${fill}"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+      </linearGradient></defs>
+      <line x1="0" y1="${baseY}" x2="${W}" y2="${baseY}" stroke="var(--text3)" stroke-width="1" stroke-dasharray="3 4" opacity="0.55"/>
+      <path d="${area}" fill="url(#eqg)"/>
+      <path d="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+      <circle cx="${end.px.toFixed(2)}" cy="${end.py.toFixed(2)}" r="3.5" fill="${color}"/>
+      <line id="scrubLine" x1="0" y1="${padT}" x2="0" y2="${H-padB}" stroke="var(--text2)" stroke-width="1" opacity="0"/>
+      <circle id="scrubDot" r="4" fill="${color}" opacity="0"/>
+    </svg>`;
+  chartGeo={ pts, W };
+}
+function onScrub(e){
+  if(!chartGeo) return;
+  const svg=$('equitySvg'); if(!svg) return;
+  const rect=svg.getBoundingClientRect();
+  const cx=e.touches?e.touches[0].clientX:e.clientX;
+  let vbX=(cx-rect.left)/rect.width*chartGeo.W;
+  const P=chartGeo.pts;
+  vbX=Math.max(P[0].px, Math.min(P[P.length-1].px, vbX));
+  let i=1; while(i<P.length && P[i].px<vbX) i++;
+  const a=P[i-1], b=P[i]||P[i-1];
+  const f=(b.px===a.px)?0:(vbX-a.px)/(b.px-a.px);
+  const bal=a.bal+(b.bal-a.bal)*f, t=a.t+(b.t-a.t)*f, py=a.py+(b.py-a.py)*f;
+  const sl=$('scrubLine'), sd=$('scrubDot'), tip=$('chartTip');
+  sl.setAttribute('x1',vbX); sl.setAttribute('x2',vbX); sl.setAttribute('opacity','0.45');
+  sd.setAttribute('cx',vbX); sd.setAttribute('cy',py); sd.setAttribute('opacity','1');
+  tip.style.opacity='1';
+  tip.innerHTML=`<span class="tip-bal">${usd(bal)}</span><span class="tip-date">${new Date(t).toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span>`;
+  const leftPx=(vbX/chartGeo.W)*rect.width;
+  const wrapW=$('chartWrap').getBoundingClientRect().width;
+  tip.style.left=Math.max(0, Math.min(wrapW - tip.offsetWidth, leftPx - tip.offsetWidth/2))+'px';
+}
+function offScrub(){ const sl=$('scrubLine'), sd=$('scrubDot'), tip=$('chartTip'); if(sl)sl.setAttribute('opacity','0'); if(sd)sd.setAttribute('opacity','0'); if(tip)tip.style.opacity='0'; }
+
+/* ---------- POSITIONS ---------- */
 function renderPositions(positions){
   const list=$('positionsList');
   if(!positions.length){ list.innerHTML='<div class="state">No open positions right now.</div>'; return; }
@@ -205,58 +301,107 @@ function renderPositions(positions){
       </div>
       <div class="row-right">
         <div class="row-val">${usd(p.currentValue||0)}</div>
-        <div class="row-pnl ${up?'up':'down'}">${up?'+':''}${usd(pnl)} (${(p.percentPnl>=0?'+':'')+(p.percentPnl||0).toFixed(1)}%)</div>
-        <div class="row-detail">in ${usd(p.initialValue||0)}</div>
+        <div class="row-pnl ${up?'up':'down'}">${signed(pnl)}</div>
       </div>
     </a>`;
   }).join('');
 }
 
-function renderHistory(activity){
-  const list=$('historyList');
-  const items=activity.filter(inHistory);
-  if(!items.length){ list.innerHTML='<div class="state">No activity yet.</div>'; return; }
-  list.innerHTML=items.map(a=>{
-    let sideClass='buy', sideLabel=a.side||a.type;
-    if(a.type==='REDEEM'){ sideClass='redeem'; sideLabel='Redeem'; }
-    else if(a.side==='SELL'){ sideClass='sell'; sideLabel='Sell'; }
-    else if(a.side==='BUY'){ sideClass='buy'; sideLabel='Buy'; }
-    return `<div class="h-row">
-      <div class="h-left">
-        <div class="h-title"><span class="h-side ${sideClass}">${sideLabel}</span>${esc(a.title||'Market')}</div>
+/* ---------- MEMBERS ---------- */
+function renderMembers(balance){
+  const host=$('membersList');
+  const sum=MEMBERS.reduce((s,m)=>s+(m.deposit||0),0);
+  $('cntMembers').textContent=MEMBERS.length;
+  if(!MEMBERS.length||sum<=0){ host.innerHTML='<div class="state">Add members in the config to see each person\u2019s share.</div>'; return; }
+  const rows=MEMBERS.map(m=>{ const share=m.deposit/sum, cur=share*balance; return {name:m.name, deposit:m.deposit, share, cur, pnl:cur-m.deposit}; })
+                    .sort((a,b)=>b.cur-a.cur);
+  host.innerHTML=rows.map((r,i)=>{ const up=r.pnl>=0; return `
+    <div class="mem-row">
+      <div class="mem-rank">${i+1}</div>
+      <div class="mem-main">
+        <div class="mem-name">${esc(r.name)}</div>
+        <div class="mem-sub">${(r.share*100).toFixed(1)}% share · put in ${usd(r.deposit)}</div>
+        <div class="mem-bar"><i style="width:${(r.share*100).toFixed(1)}%"></i></div>
       </div>
-      <div class="h-right">${a.outcome?`<span class="tag ${outClass(a.outcome)}">${esc(a.outcome)}</span>`:''}</div>
+      <div class="mem-right">
+        <div class="mem-cur">${usd(r.cur)}</div>
+        <div class="mem-pnl ${up?'up':'down'}">${signed(r.pnl)}</div>
+      </div>
+    </div>`; }).join('');
+}
+
+/* ---------- HISTORY ---------- */
+function renderHistory(closed){
+  const list=$('historyList');
+  const items=closed.filter(sinceStart).sort((a,b)=>closedTime(b)-closedTime(a));
+  if(!items.length){ list.innerHTML='<div class="state">No settled bets yet. They\u2019ll appear here once a position resolves.</div>'; return; }
+  list.innerHTML=items.map(c=>{
+    const pnl=c.realizedPnl||0, up=pnl>=0;
+    return `<div class="h-row ${up?'won':'lost'}">
+      <div class="h-left">
+        <div class="h-title">${esc(c.title||'Market')}</div>
+        <div class="h-sub">${c.outcome?`<span class="tag ${outClass(c.outcome)}">${esc(c.outcome)}</span>`:''}</div>
+      </div>
+      <div class="h-right"><div class="h-amt ${up?'up':'down'}">${signed(pnl)}</div></div>
     </div>`;
   }).join('');
 }
 
+/* ---------- MAIN ---------- */
 let loading=false;
 async function loadAll(){
   if(loading) return; loading=true;
   $('refreshBtn').textContent='…'; setLive('stale','Updating…');
   try{
-    const [positions, activity] = await Promise.all([
-      fetchJSON(`${DATA_API}/positions?user=${WALLET}`).catch(()=>[]),
-      fetchJSON(`${DATA_API}/activity?user=${WALLET}&limit=100`).catch(()=>[])
+    const [open, closed] = await Promise.all([
+      fetchJSON(`${DATA_API}/positions?user=${WALLET}&limit=500`).catch(()=>[]),
+      fetchJSON(`${DATA_API}/closed-positions?user=${WALLET}&limit=500&sortBy=TIMESTAMP&sortDirection=DESC`).catch(()=>[])
     ]);
-    const posValue=positions.reduce((s,p)=>s+(p.currentValue||0),0);
-    const cost=positions.reduce((s,p)=>s+(p.initialValue||0),0);
-    const pnl=positions.reduce((s,p)=>s+(p.cashPnl||0),0);
 
-    $('posValue').textContent=usd(posValue);
-    $('cntPositions').textContent=positions.length;
-    $('cntHistory').textContent=activity.filter(inHistory).length;
-    renderPositions(positions);
-    renderHistory(activity);
-    $('addrLine').innerHTML=`Wallet <a href="https://polymarket.com/profile/${WALLET}" target="_blank" rel="noopener">${WALLET.slice(0,6)}…${WALLET.slice(-4)}</a>`;
+    const closedQual = closed.filter(sinceStart);
+    const realized   = closedQual.reduce((s,c)=>s+(c.realizedPnl||0),0);
+    const unrealized = open.reduce((s,p)=>s+(p.cashPnl||0),0);
+    const delta   = realized + unrealized;
+    const balance = STARTING_BALANCE + delta;
+    const pct     = STARTING_BALANCE ? (delta/STARTING_BALANCE)*100 : 0;
+    const up      = delta>=0;
+
+    $('balValue').textContent = usd(balance);
+    $('balDelta').className = 'head-delta ' + (delta===0?'':(up?'up':'down'));
+    $('balDelta').innerHTML = `${delta===0?'':(up?'▲ ':'▼ ')}${signed(delta)} (${(up?'+':'')+pct.toFixed(2)}%)`;
+
+    // build equity curve from real settlement timestamps
+    const settledAsc = closedQual.slice().sort((a,b)=>closedTime(a)-closedTime(b));
+    let run=STARTING_BALANCE;
+    const series=[{ t:HISTORY_FROM*1000, bal:STARTING_BALANCE }];
+    for(const c of settledAsc){ run+=(c.realizedPnl||0); series.push({ t:closedTime(c)*1000, bal:run }); }
+    series.push({ t:Date.now(), bal:run+unrealized });
+    renderChart(series);
+
+    $('cntPositions').textContent = open.length;
+    $('cntHistory').textContent   = closedQual.length;
+    renderPositions(open);
+    renderMembers(balance);
+    renderHistory(closed);
+    const startLabel = new Date(HISTORY_FROM*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    $('addrLine').innerHTML = `Started at ${usd(STARTING_BALANCE)} on ${startLabel} · wallet <a href="https://polymarket.com/profile/${WALLET}" target="_blank" rel="noopener">${WALLET.slice(0,6)}…${WALLET.slice(-4)}</a>`;
     setLive('ok','Live · '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
   }catch(e){
     setLive('error','Connection error');
-    $('positionsList').innerHTML='<div class="state">Couldn’t reach Polymarket. Retrying…</div>';
+    $('positionsList').innerHTML='<div class="state">Couldn\u2019t reach Polymarket. Retrying…</div>';
   }finally{
     loading=false; $('refreshBtn').textContent='Refresh';
   }
 }
+
+// chart hover/scrub (attached once)
+const cw=$('chartWrap');
+cw.addEventListener('mousemove', onScrub);
+cw.addEventListener('mouseleave', offScrub);
+cw.addEventListener('touchstart', onScrub, {passive:true});
+cw.addEventListener('touchmove', onScrub, {passive:true});
+cw.addEventListener('touchend', offScrub);
+$('capStart').textContent = new Date(HISTORY_FROM*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 
 loadAll();
 setInterval(loadAll, REFRESH_MS);
