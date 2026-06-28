@@ -55,8 +55,7 @@ body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color
 
 /* POSITION ROWS */
 .rows { display:flex; flex-direction:column; gap:8px; }
-.row { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; transition:border-color .15s; }
-.row:hover { border-color:var(--bord2); }
+.row { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; color:inherit; }
 .row.won { border-left:3px solid var(--green); }
 .row.lost { border-left:3px solid var(--red); }
 .row-icon { width:36px; height:36px; border-radius:50%; background:var(--surf2); object-fit:cover; flex-shrink:0; }
@@ -113,6 +112,17 @@ body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color
 @keyframes shimmer { 100%{transform:translateX(100%);} }
 
 .addr { font-size:11px; color:var(--text3); margin-top:14px; }
+.wallet-link { color:var(--text2); cursor:pointer; border-bottom:1px dotted var(--text3); }
+.wallet-link:hover { color:var(--text); }
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); display:none; align-items:center; justify-content:center; z-index:200; padding:20px; }
+.modal-overlay.open { display:flex; }
+.modal { background:var(--surface); border:1px solid var(--bord2); border-radius:14px; padding:22px; max-width:380px; width:100%; }
+.modal-title { font-size:13px; color:var(--text2); margin-bottom:12px; }
+.modal-addr { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; word-break:break-all; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:12px; color:var(--text); line-height:1.6; }
+.modal-btn { width:100%; margin-top:14px; background:var(--green); color:#06210a; border:none; border-radius:8px; padding:11px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.modal-btn.copied { background:var(--surf2); color:var(--green); }
+.modal-close { width:100%; margin-top:8px; background:none; border:1px solid var(--border); color:var(--text2); border-radius:8px; padding:10px; font-family:inherit; font-size:13px; cursor:pointer; }
+.modal-close:hover { color:var(--text); border-color:var(--bord2); }
 .addr a { color:var(--text2); text-decoration:none; }
 .addr a:hover { color:var(--green); }
 .footer { text-align:center; padding:24px 20px; font-size:11px; color:var(--text3); border-top:1px solid var(--border); }
@@ -185,8 +195,17 @@ body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color
 
 </div>
 
+<div class="modal-overlay" id="walletModal" onclick="closeWallet(event)">
+  <div class="modal">
+    <div class="modal-title">Fund wallet address</div>
+    <div class="modal-addr" id="modalAddr"></div>
+    <button class="modal-btn" id="copyBtn" onclick="copyWallet()">Copy address</button>
+    <button class="modal-close" onclick="closeWallet()">Close</button>
+  </div>
+</div>
+
 <div class="footer">
-  Stingy Bets · World Cup Fund '26 · Live from <a href="https://polymarket.com" target="_blank" rel="noopener">Polymarket</a><br>
+  Stingy Bets · World Cup Fund '26 · Live from Polymarket<br>
   For entertainment only. Please gamble responsibly.
 </div>
 
@@ -224,6 +243,14 @@ function setLive(state, text){ $('liveDot').className='live-dot'+(state==='ok'?'
 async function fetchJSON(url){ const r=await fetch(url,{headers:{'Accept':'application/json'}}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
 function toggleHistory(){ $('histToggle').classList.toggle('open'); $('historyList').classList.toggle('open'); }
 function toggleMembers(){ $('memToggle').classList.toggle('open'); $('membersList').classList.toggle('open'); }
+
+function openWallet(){ $('modalAddr').textContent = WALLET; $('walletModal').classList.add('open'); }
+function closeWallet(e){ if(e && e.type==='click' && e.target !== e.currentTarget) return; $('walletModal').classList.remove('open'); }
+function copyWallet(){
+  const done=()=>{ const b=$('copyBtn'); b.textContent='Copied ✓'; b.classList.add('copied'); setTimeout(()=>{ b.textContent='Copy address'; b.classList.remove('copied'); },1500); };
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(WALLET).then(done).catch(()=>{}); }
+  else { const t=document.createElement('textarea'); t.value=WALLET; document.body.appendChild(t); t.select(); try{document.execCommand('copy');done();}catch(_){} document.body.removeChild(t); }
+}
 
 /* ---------- EQUITY CURVE ---------- */
 let chartGeo = null;
@@ -287,9 +314,8 @@ function renderPositions(positions){
   positions.sort((a,b)=>(b.currentValue||0)-(a.currentValue||0));
   list.innerHTML=positions.map(p=>{
     const pnl=p.cashPnl||0, up=pnl>=0;
-    const url=p.eventSlug?('https://polymarket.com/event/'+p.eventSlug):'https://polymarket.com';
     const icon=p.icon?`<img class="row-icon" src="${p.icon}" alt="">`:'<div class="row-icon"></div>';
-    return `<a class="row ${up?'won':'lost'}" href="${url}" target="_blank" rel="noopener">
+    return `<div class="row ${up?'won':'lost'}">
       ${icon}
       <div class="row-main">
         <div class="row-title">${esc(p.title||'Market')}</div>
@@ -303,7 +329,7 @@ function renderPositions(positions){
         <div class="row-val">${usd(p.currentValue||0)}</div>
         <div class="row-pnl ${up?'up':'down'}">${signed(pnl)}</div>
       </div>
-    </a>`;
+    </div>`;
   }).join('');
 }
 
@@ -384,7 +410,7 @@ async function loadAll(){
     renderMembers(balance);
     renderHistory(closed);
     const startLabel = new Date(HISTORY_FROM*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-    $('addrLine').innerHTML = `Started at ${usd(STARTING_BALANCE)} on ${startLabel} · wallet <a href="https://polymarket.com/profile/${WALLET}" target="_blank" rel="noopener">${WALLET.slice(0,6)}…${WALLET.slice(-4)}</a>`;
+    $('addrLine').innerHTML = `Started at ${usd(STARTING_BALANCE)} on ${startLabel} · <span class="wallet-link" onclick="openWallet()">wallet ${WALLET.slice(0,6)}…${WALLET.slice(-4)}</span>`;
     setLive('ok','Live · '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
   }catch(e){
     setLive('error','Connection error');
