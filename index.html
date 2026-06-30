@@ -104,6 +104,8 @@ body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color
 .h-amt { font-size:15px; font-weight:700; white-space:nowrap; letter-spacing:-0.01em; }
 .h-amt.up { color:var(--green); }
 .h-amt.down { color:var(--red); }
+.more-btn { width:100%; background:var(--surf2); border:1px solid var(--border); color:var(--text2); border-radius:12px; padding:11px; font-family:inherit; font-size:12px; font-weight:500; cursor:pointer; }
+.more-btn:hover { color:var(--text); border-color:var(--bord2); }
 
 .state { text-align:center; padding:28px 0; color:var(--text3); font-size:13px; }
 .skeleton { background:var(--surface); border:1px solid var(--border); border-radius:12px; height:64px; margin-bottom:8px; position:relative; overflow:hidden; }
@@ -357,11 +359,14 @@ function renderMembers(balance){
     </div>`; }).join('');
 }
 
-/* ---------- HISTORY ---------- */
-function renderHistory(settled){
+/* ---------- HISTORY (paginated, 10 at a time) ---------- */
+let settledCache=[], historyShown=10;
+function renderHistory(settled){ settledCache=settled; renderHistoryRows(); }
+function showMoreHistory(){ historyShown+=10; renderHistoryRows(); }
+function renderHistoryRows(){
   const list=$('historyList');
-  if(!settled.length){ list.innerHTML='<div class="state">No settled bets yet. They\u2019ll appear here once a position resolves.</div>'; return; }
-  list.innerHTML=settled.map(c=>{
+  if(!settledCache.length){ list.innerHTML='<div class="state">No settled bets yet. They\u2019ll appear here once a position resolves.</div>'; return; }
+  let html=settledCache.slice(0,historyShown).map(c=>{
     const up=c.net>=0;
     return `<div class="h-row ${up?'won':'lost'}">
       <div class="h-left">
@@ -371,6 +376,9 @@ function renderHistory(settled){
       <div class="h-right"><div class="h-amt ${up?'up':'down'}">${signed(c.net)}</div></div>
     </div>`;
   }).join('');
+  const left=settledCache.length-historyShown;
+  if(left>0) html+=`<button class="more-btn" onclick="showMoreHistory()">Show ${Math.min(10,left)} more (${left} left)</button>`;
+  list.innerHTML=html;
 }
 
 /* ---------- MAIN ---------- */
